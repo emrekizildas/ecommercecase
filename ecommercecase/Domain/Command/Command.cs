@@ -24,11 +24,32 @@ namespace ecommercecase.Domain.Command
             Arguments = args;
             bool checkEmpty = Arguments.Contains(string.Empty);
             if (checkEmpty)
-                throw new CommandException(301, "Boş argüman gönderemezsiniz.");
+                throw new CommandException(301, "You cannot submit an empty argument.");
 
             int argumentNumber = Arguments.Length - 1;
             if (ArgCount != argumentNumber)
-                throw new CommandException(302, $"{Code} komutu için geçerli argüman girmediniz.");
+                throw new CommandException(302, $"You did not enter a valid argument for the {Code} command.\n{GetUsingInfo()}");
+        }
+
+        public string GetUsingInfo()
+        {
+            switch (Code.ToLower())
+            {
+                case Constants.CreateProduct:
+                    return Constants.Using_CreateProduct;
+                case Constants.CreateCampaign:
+                    return Constants.Using_CreateCampaign;
+                case Constants.CreateOrder:
+                    return Constants.Using_CreateOrder;
+                case Constants.CampaignInfo:
+                    return Constants.Using_CampaignInfo;
+                case Constants.ProductInfo:
+                    return Constants.Using_ProductInfo;
+                case Constants.IncreaseTime:
+                    return Constants.Using_IncreaseTime;
+                default:
+                    return string.Empty;
+            }
         }
 
         public string Run()
@@ -49,15 +70,15 @@ namespace ecommercecase.Domain.Command
                     return $"Order created; product {order.Product.Code}, quantity {order.Quantity}";
                 case Constants.CampaignInfo:
                     var infoCampaign = Context.Campaigns.FirstOrDefault(i => i.Name.ToLower() == Arguments[1].ToLower());
-                    return infoCampaign?.GetInfo() ?? "Aradığınız kampanya bulunamadı.";
+                    return infoCampaign?.GetInfo() ?? "The campaign you were looking for could not be found.";
                 case Constants.ProductInfo:
                     var infoProduct = Context.Products.FirstOrDefault(i => i.Code.ToLower() == Arguments[1].ToLower());
-                    return infoProduct?.GetInfo() ?? "Aradığınız ürün bulunamadı.";
+                    return infoProduct?.GetInfo() ?? "The product you are looking for could not be found.";
                 case Constants.IncreaseTime:
                     Context.Time.Increase(Arguments);
                     return $"Time is {Context.Time.DateTime.ToShortTimeString()}";
                 default:
-                    return "Komut algılanamadı.";
+                    return "Command not detected.";
             }
         }
     }

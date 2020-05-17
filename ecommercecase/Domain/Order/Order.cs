@@ -27,7 +27,7 @@ namespace ecommercecase.Domain.Order
             }
             catch
             {
-                throw new CommandException(601, "Sipariş oluşturulurken bir hata meydana geldi.");
+                throw new CommandException(601, "There was an error creating the order.");
             }
         }
     }

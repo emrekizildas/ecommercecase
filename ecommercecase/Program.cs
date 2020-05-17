@@ -14,7 +14,7 @@ namespace ecommercecase
         {
             Context.Initialize();
             Console.WriteLine("Welcome to our eCommmerce console app.");
-            Console.WriteLine("If you exit this program you should give me a this command: 'X'");
+            Console.WriteLine("If you want exit this program you should give me this command: 'X'");
             Console.WriteLine();
             bool canExist = false;
             while (!canExist)
@@ -42,7 +42,7 @@ namespace ecommercecase
                 }
                 catch
                 {
-                    Console.WriteLine("Geçerli bir komut girmediniz.");
+                    Console.WriteLine("You have not entered a valid command.");
                 }
             }
          

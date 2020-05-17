@@ -5,7 +5,7 @@ using ecommercecase.Domain.Exceptions;
 
 namespace ecommercecase.Domain.Campaign
 {
-    public class Campaign: ICampaign
+    public class Campaign : ICampaign
     {
         public int StartTime { get; set; }
         public int EndTime { get; set; }
@@ -16,7 +16,7 @@ namespace ecommercecase.Domain.Campaign
         public int Target { get; set; }
         public CampaignStatus Status { get { return Context.Time.Hour > EndTime ? CampaignStatus.Ended : CampaignStatus.Active; } }
 
-        public Campaign(string[] args) => Verify(args); 
+        public Campaign(string[] args) => Verify(args);
 
         public string GetInfo()
         {
@@ -29,8 +29,8 @@ namespace ecommercecase.Domain.Campaign
 
         public void Verify(string[] args)
         {
-            if (Context.Campaigns.SingleOrDefault(i => i.Name.ToLower() == Name.ToLower()) != null)
-                throw new CommandException(502, "Aynı isme sahip kampanya mevcut.");
+            if (Context.Campaigns.FirstOrDefault(i => i.Name.ToLower() == Name.ToLower()) != null)
+                throw new CommandException(502, "There is a campaign with the same name.");
 
             try
             {
@@ -45,8 +45,36 @@ namespace ecommercecase.Domain.Campaign
             }
             catch
             {
-                throw new CommandException(501, "Kampanya oluştururken bir hata meydana geldi.");
+                throw new CommandException(501, "There was an error creating the campaign.");
             }
+        }
+
+        public void Process()
+        {
+            int totalSales = Context.Orders.Count(i => i.Product.Code == Product.Code && i.ActionTime >= StartTime);
+
+            bool increasePrice = totalSales > Target / 2;
+            if (increasePrice)
+            {
+                int highPrice = Product.MainPrice * (100 + PML) / 100;
+                if (highPrice > Product.Price)
+                {
+                    Product.Price += Product.Price + 5 > highPrice ? 5 : (highPrice - Product.Price);
+                }
+            }
+            else
+            {
+                int lowerPrice = Product.MainPrice * (100 - PML) / 100;
+                if (lowerPrice < Product.Price)
+                {
+                    Product.Price -= Product.Price - 5 > lowerPrice ? 5 : (Product.Price - lowerPrice);
+                }
+            }
+        }
+
+        public void Deactive()
+        {
+            Product.Price = Product.MainPrice;
         }
 
         public enum CampaignStatus

@@ -16,7 +16,7 @@ namespace ecommercecase.Domain.Product
         public void Verify(string[] args)
         {
             if (Context.Products.SingleOrDefault(i => i.Code.ToLower() == Code.ToLower()) != null)
-                throw new CommandException(402, "Aynı koda sahip ürün mevcut.");
+                throw new CommandException(402, "There is a product with the same code.");
 
             try
             {
@@ -27,7 +27,7 @@ namespace ecommercecase.Domain.Product
             }
             catch
             {
-                throw new CommandException(401, "Ürün oluştururken bir hata meydana geldi.");
+                throw new CommandException(401, "There was an error creating the product.");
             }
         }
 
